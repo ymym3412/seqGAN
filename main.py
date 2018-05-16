@@ -76,6 +76,7 @@ def train_generator_PG(gen, gen_opt, oracle, dis, num_batches):
     for batch in range(num_batches):
         s = gen.sample(BATCH_SIZE*2)        # 64 works best
         inp, target = helpers.prepare_generator_batch(s, start_letter=START_LETTER, gpu=CUDA)
+        # rewardsは各文をDiscriminatorが0~1で識別した値
         rewards = dis.batchClassify(target)
 
         gen_opt.zero_grad()

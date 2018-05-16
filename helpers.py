@@ -28,6 +28,8 @@ def prepare_generator_batch(samples, start_letter=0, gpu=False):
         inp = inp.cuda()
         target = target.cuda()
 
+    # targetは入力のsamplesと同じ
+    # inpは冒頭がstart letter,でtargetの-1indexまでが入っている
     return inp, target
 
 

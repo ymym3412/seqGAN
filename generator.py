@@ -66,6 +66,7 @@ class Generator(nn.Module):
             inp = inp.cuda()
 
         for i in range(self.max_seq_len):
+            # Uh...it is OK not using out as input of forward?
             out, h = self.forward(inp, h)               # out: num_samples x vocab_size
             out = torch.multinomial(torch.exp(out), 1)  # num_samples x 1 (sampling from each row)
             samples[:, i] = out.data
@@ -122,6 +123,11 @@ class Generator(nn.Module):
             out, h = self.forward(inp[i], h)
             # TODO: should h be detached from graph (.detach())?
             for j in range(batch_size):
+                # サンプリングしたデータを出力する確率を出すのがout[j][target.data[i][j]]
+                # これがGの値
+                # これにreward Qを乗算したものがPolicy Gradientのロスになる
+                # 疑問: rewardは常に長さTの文章をDisが識別した結果でいいのか？
+                # サンプリングしたものの平均はとらなくてよいのか？
                 loss += -out[j][target.data[i][j]]*reward[j]     # log(P(y_t|Y_1:Y_{t-1})) * Q
 
         return loss/batch_size
